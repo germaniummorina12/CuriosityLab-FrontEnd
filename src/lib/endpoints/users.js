@@ -10,6 +10,8 @@ export const usersApi = {
     apiClient.get('/users/range-date', { params: { fromDate, UntilDate: untilDate } }).then((r) => r.data),
   getByNameLength: (length) => apiClient.get(`/users/name-length/${length}`).then((r) => r.data),
   getByName: (input) => apiClient.get(`/users/get-user-by-name/${input}`).then((r) => r.data),
+  getByNameOrEmail: (text) => apiClient.get(`/users/search-name-email/${text}`).then((r) => r.data),
+  getByEmailDomain: (email) => apiClient.get(`/users/search-email-domain/${email}`).then((r) => r.data),
   getWithoutRole: () => apiClient.get('/users/get-user-no-roles').then((r) => r.data),
   getWithoutAge: () => apiClient.get('/users/get-user-no-age').then((r) => r.data),
   getSortedByDate: () => apiClient.get('/users/sort-user-by-date').then((r) => r.data),

@@ -44,7 +44,11 @@ export default function Desktop() {
         <DesktopIcon icon={registry['internet-explorer'].icon} label="Internet Explorer" onOpen={() => launch('internet-explorer')} />
         <DesktopIcon icon={registry.chrome.icon} label="Google Chrome" size={72} onOpen={() => launch('chrome')} />
         <DesktopIcon icon={registry.minesweeper.icon} label="Minesweeper" size={64} onOpen={() => launch('minesweeper')} />
-        <DesktopIcon icon={registry.snake.icon} label="Snake" onOpen={() => launch('snake')} />
+        <DesktopIcon icon={registry.solitaire.icon} label="Solitaire" onOpen={() => launch('solitaire')} />
+        <DesktopIcon icon={registry.freecell.icon} label="FreeCell" onOpen={() => launch('freecell')} />
+        <DesktopIcon icon={registry.hearts.icon} label="Hearts" onOpen={() => launch('hearts')} />
+        <DesktopIcon icon={registry['spider-solitaire'].icon} label="Spider Solitaire" onOpen={() => launch('spider-solitaire')} />
+        <DesktopIcon icon={registry.paint.icon} label="Paint" size={56} onOpen={() => launch('paint')} />
       </div>
 
       {windows.map((w) => {

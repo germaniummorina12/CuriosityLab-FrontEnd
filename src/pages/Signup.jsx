@@ -1,6 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { buttonPrimary, buttonXp, fieldInset, windowFrame, titleBarActive } from '../styles/xpTheme'
+import {
+  buttonPrimary,
+  buttonXp,
+  fieldInset,
+  windowFrameBase,
+  windowBorderActive,
+  titleBarActive,
+} from '../styles/xpTheme'
 import Wallpaper from '../components/desktop/Wallpaper'
 
 export default function Signup() {
@@ -12,8 +19,8 @@ export default function Signup() {
   return (
     <div className="relative w-screen h-screen flex items-center justify-center">
       <Wallpaper />
-      <div className={`relative ${windowFrame} w-[420px]`}>
-        <div className={`h-[30px] flex items-center px-3 text-[13px] font-bold ${titleBarActive}`}>
+      <div className={`relative rounded-t-[8px] ${windowBorderActive} ${windowFrameBase} w-[420px]`}>
+        <div className={`h-[30px] flex items-center px-3 text-[12px] font-bold ${titleBarActive}`}>
           Create a new account
         </div>
         <div className="bg-[#ece9d8] p-5 flex flex-col gap-3">

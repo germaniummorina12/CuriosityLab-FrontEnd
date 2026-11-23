@@ -30,8 +30,12 @@ export default function StartMenu({ onLaunch, onClose, onLogout }) {
   const extras = [
     { kind: 'internet-explorer', label: 'Internet Explorer', icon: registry['internet-explorer'].icon },
     { kind: 'chrome', label: 'Google Chrome', icon: registry.chrome.icon },
+    { kind: 'paint', label: 'Paint', icon: registry.paint.icon },
     { kind: 'minesweeper', label: 'Minesweeper', icon: registry.minesweeper.icon },
-    { kind: 'snake', label: 'Snake', icon: registry.snake.icon },
+    { kind: 'solitaire', label: 'Solitaire', icon: registry.solitaire.icon },
+    { kind: 'freecell', label: 'FreeCell', icon: registry.freecell.icon },
+    { kind: 'hearts', label: 'Hearts', icon: registry.hearts.icon },
+    { kind: 'spider-solitaire', label: 'Spider Solitaire', icon: registry['spider-solitaire'].icon },
   ]
 
   const sidebarTop = [
@@ -48,11 +52,11 @@ export default function StartMenu({ onLaunch, onClose, onLogout }) {
       ref={menuRef}
       className="absolute bottom-[40px] left-0 w-[420px] rounded-t-[8px] overflow-hidden border border-[#0831d9] shadow-[2px_2px_10px_rgba(0,0,0,0.5)] flex flex-col z-50"
     >
-      <div className="bg-gradient-to-r from-[#1941a5] to-[#2a6fe0] text-white px-3 py-2 flex items-center gap-2">
-        <span className="w-8 h-8 rounded-[4px] bg-white/20 border border-white/40 flex items-center justify-center font-bold">
+      <div className="bg-gradient-to-r from-[#1941a5] to-[#2a6fe0] shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] text-white px-3 py-2.5 flex items-center gap-2.5">
+        <span className="w-10 h-10 rounded-full bg-white/20 border-2 border-white/60 flex items-center justify-center font-bold text-[16px] shadow-[1px_1px_3px_rgba(0,0,0,0.4)]">
           {session?.tile}
         </span>
-        <span className="font-semibold text-[14px]">{session?.name}</span>
+        <span className="font-bold text-[15px]">{session?.name}</span>
       </div>
       <div className="flex-1 bg-white flex">
         <div className="flex-1 py-2">
@@ -102,19 +106,23 @@ export default function StartMenu({ onLaunch, onClose, onLogout }) {
           ))}
         </div>
       </div>
-      <div className="bg-gradient-to-r from-[#1941a5] to-[#2a6fe0] px-2 py-1.5 flex justify-end gap-1">
+      <div className="bg-gradient-to-r from-[#1941a5] to-[#2a6fe0] shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] px-2 py-2 flex justify-end gap-2">
         <button
           onClick={onLogout}
-          className="flex items-center gap-2 text-white text-[12px] px-2 py-1 rounded-[3px] hover:bg-white/15"
+          className="flex items-center gap-1.5 text-white text-[12px] font-semibold px-2.5 py-1 rounded-[4px] border border-white/0 hover:border-white/40 hover:bg-white/15"
         >
-          <LogOut size={14} strokeWidth={2} />
+          <span className="w-[18px] h-[18px] rounded-full bg-[#3f8ae0] border border-white/50 flex items-center justify-center shrink-0">
+            <LogOut size={11} strokeWidth={2.5} />
+          </span>
           Log Off
         </button>
         <button
           onClick={onLogout}
-          className="flex items-center gap-2 text-white text-[12px] px-2 py-1 rounded-[3px] hover:bg-white/15"
+          className="flex items-center gap-1.5 text-white text-[12px] font-semibold px-2.5 py-1 rounded-[4px] border border-white/0 hover:border-white/40 hover:bg-white/15"
         >
-          <Power size={14} strokeWidth={2} />
+          <span className="w-[18px] h-[18px] rounded-full bg-[#d33b1f] border border-white/50 flex items-center justify-center shrink-0">
+            <Power size={11} strokeWidth={2.5} />
+          </span>
           Turn Off Computer
         </button>
       </div>

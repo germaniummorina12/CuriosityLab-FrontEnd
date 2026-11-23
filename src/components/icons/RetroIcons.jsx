@@ -1,100 +1,112 @@
-// Real icon images the user sourced and dropped into /public, cleaned up (backgrounds
-// removed) and wrapped so they drop straight into every spot that expects an
-// `icon` component with a `size` prop (DesktopIcon, Window title bar, Taskbar, StartMenu).
+// Real icon images sourced and dropped into /public, wrapped so they drop straight into
+// every spot that expects an `icon` component with a `size` prop (DesktopIcon, Window
+// title bar, Taskbar, StartMenu). The xp-icon-*.png set are the actual Windows XP Luna
+// icon designs (My Computer, Recycle Bin, Paint, Minesweeper, Solitaire, My Documents,
+// Control Panel, Help and Support) — local personal-use desktop skin, not redistributed.
 
-export function ExcelIcon({ size = 24 }) {
+function RealIcon({ src, size }) {
   return (
     <img
-      src="/png-clipart-windows-live-for-xp-green-excel-icon-thumbnail.png"
+      src={src}
       alt=""
       width={size}
       height={size}
       style={{ width: size, height: size, objectFit: 'contain' }}
     />
   )
+}
+
+// Period-accurate "old" Excel file icon (page + mini spreadsheet grid), sourced from
+// Wikimedia Commons — replaces a clipart that had the word "Excel" awkwardly baked in.
+export function ExcelIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-excel.svg" size={size} />
 }
 
 export function InternetExplorerIcon({ size = 24 }) {
-  return (
-    <img
-      src="/134-1340344_internet-explorer-logo-png-transparent-png.png"
-      alt=""
-      width={size}
-      height={size}
-      style={{ width: size, height: size, objectFit: 'contain' }}
-    />
-  )
+  return <RealIcon src="/xp-icon-internet-explorer.png" size={size} />
 }
 
+// The old (2011) Chrome mark — the clean successor to the original 2008 3D-ball logo,
+// closer to the XP era than Google's current flat 2022 redesign. Sourced from Wikimedia
+// Commons, tagged there as too simple a geometric shape for copyright.
 export function ChromeIcon({ size = 24 }) {
-  return (
-    <img
-      src="/9075188-middle.png"
-      alt=""
-      width={size}
-      height={size}
-      style={{ width: size, height: size, objectFit: 'contain' }}
-    />
-  )
+  return <RealIcon src="/xp-icon-chrome.png" size={size} />
 }
 
 export function RecycleBinIcon({ size = 24 }) {
-  return (
-    <img
-      src="/tumblr_65ffde9d8c5c2982d55440a6fc242a91_78f19184_540.png"
-      alt=""
-      width={size}
-      height={size}
-      style={{ width: size, height: size, objectFit: 'contain' }}
-    />
-  )
+  return <RealIcon src="/xp-icon-recycle-bin.png" size={size} />
 }
 
 export function MinesweeperIcon({ size = 24 }) {
-  return (
-    <img
-      src="/tumblr_a37de7520c46fc1ce62d94a79bc66d6c_fe69745e_540.png"
-      alt=""
-      width={size}
-      height={size}
-      style={{ width: size, height: size, objectFit: 'contain' }}
-    />
-  )
+  return <RealIcon src="/xp-icon-minesweeper.png" size={size} />
 }
 
-// No real asset for this one — a small drawn recreation of the classic green Snake icon.
-export function SnakeIcon({ size = 24 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24">
-      <path
-        d="M4 6c0-1.7 1.3-3 3-3s3 1.3 3 3v9c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2H8"
-        fill="none"
-        stroke="#1f7a2e"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-      />
-      <path
-        d="M4 6c0-1.7 1.3-3 3-3s3 1.3 3 3v9c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2H8"
-        fill="none"
-        stroke="#4a9a2e"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-      <circle cx="7" cy="6" r="3.4" fill="#4a9a2e" stroke="#1f7a2e" strokeWidth="1" />
-      <circle cx="6" cy="5" r="0.7" fill="#0a0a0a" />
-      <circle cx="8" cy="5" r="0.7" fill="#0a0a0a" />
-    </svg>
-  )
+export function PaintIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-paint.png" size={size} />
+}
+
+export function SolitaireIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-solitaire.png" size={size} />
+}
+
+export function FreeCellIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-freecell.png" size={size} />
+}
+
+export function HeartsIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-hearts.png" size={size} />
+}
+
+export function SpiderSolitaireIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-spider-solitaire.png" size={size} />
+}
+
+export function VolumeIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-volume.png" size={size} />
+}
+
+export function WirelessIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-wireless.png" size={size} />
+}
+
+export function SecurityCenterIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-security-center.png" size={size} />
+}
+
+export function RestartIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-restart.png" size={size} />
+}
+
+// Sourced from RetroBar (github.com/dremin/RetroBar, Apache-2.0) — its actual XP taskbar
+// "Show Desktop" quick-launch icon.
+export function ShowDesktopIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-show-desktop.png" size={size} />
+}
+
+export function MyDocumentsIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-my-documents.png" size={size} />
+}
+
+export function ControlPanelIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-control-panel.png" size={size} />
+}
+
+export function HelpIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-help.png" size={size} />
 }
 
 export function MyComputerIcon({ size = 24 }) {
+  return <RealIcon src="/xp-icon-my-computer.png" size={size} />
+}
+
+// No real asset for this one — a small drawn recreation of a user account tile icon.
+export function UserTileIcon({ size = 24 }) {
   return (
-    <img
-      src="/tumblr_b25bfc3736abbeabd446a2ac7d495fe5_aec0adab_1280.png"
-      alt=""
-      width={size}
-      height={size}
-      style={{ width: size, height: size, objectFit: 'contain' }}
-    />
+    <svg width={size} height={size} viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="3" fill="#3f8ae0" stroke="#1941a5" strokeWidth="1" />
+      <rect x="3" y="3" width="18" height="9" rx="3" fill="#ffffff" opacity="0.2" />
+      <circle cx="12" cy="9.5" r="3.4" fill="#f0dcc0" stroke="#b97a57" strokeWidth="0.6" />
+      <path d="M5.5,19.5 Q5.5,13.5 12,13.5 Q18.5,13.5 18.5,19.5 Z" fill="#f0dcc0" stroke="#b97a57" strokeWidth="0.6" />
+    </svg>
   )
 }

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { usersApi } from '../lib/endpoints/users'
 import { rolesApi } from '../lib/endpoints/roles'
 import { sectionGroove, statusBar } from '../styles/xpTheme'
+import { ExplorerChrome } from '../components/desktop/ExplorerChrome'
+import { MyComputerIcon } from '../components/icons/RetroIcons'
 
 function StatRow({ label, value }) {
   return (
@@ -31,6 +33,7 @@ export default function MyComputerWindow() {
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-2">
+      <ExplorerChrome title="My Computer" icon={MyComputerIcon} />
       <div className="flex items-center gap-2 px-1">
         <span className="w-9 h-9 rounded-[4px] bg-gradient-to-b from-[#6fa6f0] to-[#1941a5] border border-[#0a3d8f]" />
         <div>

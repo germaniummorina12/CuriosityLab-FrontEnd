@@ -2,6 +2,8 @@ import { useWindowManager } from '../context/WindowManagerContext'
 import { useAuth } from '../context/AuthContext'
 import { registry } from './registry'
 import { buttonXp, buttonPrimary, sectionGroove, statusBar } from '../styles/xpTheme'
+import { ExplorerChrome } from '../components/desktop/ExplorerChrome'
+import { ControlPanelIcon } from '../components/icons/RetroIcons'
 
 export default function ControlPanelWindow() {
   const { openWindow } = useWindowManager()
@@ -16,6 +18,7 @@ export default function ControlPanelWindow() {
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3 overflow-auto">
+      <ExplorerChrome title="Control Panel" icon={ControlPanelIcon} />
       <div>
         <p className="text-[12px] font-bold text-[#1941a5] mb-1.5">User Accounts</p>
         <div className={`${sectionGroove} p-2 flex items-center gap-3`}>

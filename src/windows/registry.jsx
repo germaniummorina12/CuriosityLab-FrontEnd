@@ -1,5 +1,20 @@
-import { User, Folder, Settings, HelpCircle } from 'lucide-react'
-import { ExcelIcon, MyComputerIcon, RecycleBinIcon, InternetExplorerIcon, ChromeIcon, MinesweeperIcon, SnakeIcon } from '../components/icons/RetroIcons'
+import {
+  ExcelIcon,
+  MyComputerIcon,
+  RecycleBinIcon,
+  InternetExplorerIcon,
+  ChromeIcon,
+  MinesweeperIcon,
+  SolitaireIcon,
+  FreeCellIcon,
+  HeartsIcon,
+  SpiderSolitaireIcon,
+  PaintIcon,
+  MyDocumentsIcon,
+  ControlPanelIcon,
+  HelpIcon,
+  UserTileIcon,
+} from '../components/icons/RetroIcons'
 import MyComputerWindow from './MyComputerWindow'
 import UsersSheet from './UsersSheet'
 import RolesSheet from './RolesSheet'
@@ -9,7 +24,11 @@ import RecycleBinWindow from './RecycleBinWindow'
 import UserProfileWindow from './UserProfileWindow'
 import BrowserWindow from './BrowserWindow'
 import Minesweeper from './games/Minesweeper'
-import Snake from './games/Snake'
+import Solitaire from './games/Solitaire'
+import FreeCell from './games/FreeCell'
+import Hearts from './games/Hearts'
+import SpiderSolitaire from './games/SpiderSolitaire'
+import Paint from './Paint'
 import MyDocumentsWindow from './MyDocumentsWindow'
 import ControlPanelWindow from './ControlPanelWindow'
 import HelpWindow from './HelpWindow'
@@ -24,12 +43,16 @@ export const registry = {
   addresses: { title: 'AddressBook.xls', icon: ExcelIcon, Component: AddressesSheet, width: 620, height: 440 },
   contacts: { title: 'ContactList.xls', icon: ExcelIcon, Component: ContactsSheet, width: 560, height: 420 },
   'recycle-bin': { title: 'Recycle Bin', icon: RecycleBinIcon, Component: RecycleBinWindow, width: 420, height: 320 },
-  'user-profile': { title: 'User Properties', icon: User, Component: UserProfileWindow, width: 420, height: 380 },
+  'user-profile': { title: 'User Properties', icon: UserTileIcon, Component: UserProfileWindow, width: 420, height: 380 },
   'internet-explorer': { title: 'Internet Explorer', icon: InternetExplorerIcon, Component: InternetExplorerWindow, width: 640, height: 480 },
   chrome: { title: 'Google Chrome', icon: ChromeIcon, Component: ChromeWindow, width: 640, height: 480 },
   minesweeper: { title: 'Minesweeper', icon: MinesweeperIcon, Component: Minesweeper, width: 260, height: 400 },
-  snake: { title: 'Snake', icon: SnakeIcon, Component: Snake, width: 300, height: 360 },
-  'my-documents': { title: 'My Documents', icon: Folder, Component: MyDocumentsWindow, width: 380, height: 360 },
-  'control-panel': { title: 'Control Panel', icon: Settings, Component: ControlPanelWindow, width: 460, height: 460 },
-  help: { title: 'Help and Support', icon: HelpCircle, Component: HelpWindow, width: 420, height: 420 },
+  solitaire: { title: 'Solitaire', icon: SolitaireIcon, Component: Solitaire, width: 400, height: 500 },
+  freecell: { title: 'FreeCell', icon: FreeCellIcon, Component: FreeCell, width: 460, height: 480 },
+  hearts: { title: 'Hearts', icon: HeartsIcon, Component: Hearts, width: 420, height: 480 },
+  'spider-solitaire': { title: 'Spider Solitaire', icon: SpiderSolitaireIcon, Component: SpiderSolitaire, width: 520, height: 480 },
+  paint: { title: 'untitled - Paint', icon: PaintIcon, Component: Paint, width: 500, height: 420 },
+  'my-documents': { title: 'My Documents', icon: MyDocumentsIcon, Component: MyDocumentsWindow, width: 380, height: 360 },
+  'control-panel': { title: 'Control Panel', icon: ControlPanelIcon, Component: ControlPanelWindow, width: 460, height: 460 },
+  help: { title: 'Help and Support', icon: HelpIcon, Component: HelpWindow, width: 420, height: 420 },
 }

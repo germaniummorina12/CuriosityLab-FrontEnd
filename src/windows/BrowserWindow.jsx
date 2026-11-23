@@ -1,9 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, RotateCw, Home, AlertTriangle, Plus, X, Globe, Search } from 'lucide-react'
-import { buttonXp, fieldInset, statusBar, sectionGroove } from '../styles/xpTheme'
+import { buttonXp, fieldInset, statusBar } from '../styles/xpTheme'
 
 const SEARCH_HOME = 'app:search'
-const searchUrl = (q) => `app:search?q=${encodeURIComponent(q)}`
+// Google itself can never be embedded (it unconditionally sends X-Frame-Options, enforced
+// by the browser — no code can work around that). Bing, however, sends neither
+// X-Frame-Options nor a frame-ancestors CSP directive on its search results (confirmed via
+// `curl -I`), so real general-web search actually works here — the "Google" branding on the
+// Chrome home page is cosmetic (matching its real new-tab page look), but the query itself
+// goes to a genuine, live search engine once submitted.
+const searchUrl = (q) => `https://www.bing.com/search?q=${encodeURIComponent(q)}`
 
 // A bare word or phrase ("cats", "best pizza near me") isn't a URL — only treat the address
 // bar input as a URL if it actually looks like one (has a dot-separated host, no spaces).
@@ -17,9 +23,12 @@ const normalize = (url) => {
 
 const tabLabel = (url) => {
   if (url === SEARCH_HOME) return 'New Tab'
-  if (url.startsWith('app:search?')) return new URLSearchParams(url.split('?')[1]).get('q') ?? 'Search'
   try {
-    return new URL(url).hostname.replace(/^www\./, '')
+    const u = new URL(url)
+    if (u.hostname === 'www.bing.com' && u.pathname === '/search') {
+      return u.searchParams.get('q') ?? 'Search'
+    }
+    return u.hostname.replace(/^www\./, '')
   } catch {
     return url
   }
@@ -31,7 +40,6 @@ const tabLabel = (url) => {
 // authentic-looking "can't display this page" screen instead of a permanently blank frame.
 const FRAME_BLOCKED_HOSTS = [
   'google.com',
-  'bing.com',
   'duckduckgo.com',
   'youtube.com',
   'facebook.com',
@@ -124,7 +132,7 @@ function SearchHomePage({ browser, onSearch }) {
             autoFocus
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search Wikipedia…"
+            placeholder="Search the web…"
             className={`${fieldInset} flex-1 py-2`}
           />
           <button type="submit" className={buttonXp}>
@@ -132,61 +140,10 @@ function SearchHomePage({ browser, onSearch }) {
           </button>
         </div>
         <p className="text-[11px] text-[#777] text-center">
-          Results come from Wikipedia's public search API — real queries, real articles.
+          Real search, real results — the query goes straight to Bing (the one major engine
+          that doesn't block being shown inside another page).
         </p>
       </form>
-    </div>
-  )
-}
-
-function SearchResultsPage({ url, onOpen }) {
-  const query = useMemo(() => new URLSearchParams(url.split('?')[1]).get('q') ?? '', [url])
-  const [state, setState] = useState({ status: 'loading', results: [] })
-
-  useEffect(() => {
-    let cancelled = false
-    setState({ status: 'loading', results: [] })
-    const endpoint = `https://en.wikipedia.org/w/api.php?action=opensearch&format=json&origin=*&limit=8&search=${encodeURIComponent(query)}`
-    fetch(endpoint)
-      .then((res) => res.json())
-      .then(([, titles, descriptions, urls]) => {
-        if (cancelled) return
-        const results = titles.map((title, i) => ({ title, description: descriptions[i], url: urls[i] }))
-        setState({ status: results.length ? 'ready' : 'empty', results })
-      })
-      .catch(() => {
-        if (!cancelled) setState({ status: 'error', results: [] })
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [query])
-
-  return (
-    <div className="w-full h-full overflow-auto bg-white px-6 py-4">
-      <p className="text-[12px] text-[#555] mb-3">
-        Results for <span className="font-bold text-[#111]">{query}</span>
-      </p>
-      {state.status === 'loading' ? <p className="text-[13px] text-[#777]">Searching…</p> : null}
-      {state.status === 'error' ? (
-        <p className="text-[13px] text-[#8a1a1a]">Could not reach the search service. Check your connection.</p>
-      ) : null}
-      {state.status === 'empty' ? <p className="text-[13px] text-[#777]">No results found.</p> : null}
-      {state.status === 'ready' ? (
-        <div className={`${sectionGroove} divide-y divide-[#e3e1d6]`}>
-          {state.results.map((r) => (
-            <button
-              key={r.url}
-              onClick={() => onOpen(r.url)}
-              className="w-full text-left px-3 py-2.5 hover:bg-[#f0f4fb]"
-            >
-              <div className="text-[13px] text-[#1a0dab] hover:underline">{r.title}</div>
-              <div className="text-[11px] text-[#1a7a2e]">{r.url}</div>
-              {r.description ? <div className="text-[12px] text-[#444] mt-0.5">{r.description}</div> : null}
-            </button>
-          ))}
-        </div>
-      ) : null}
     </div>
   )
 }
@@ -328,8 +285,6 @@ export default function BrowserWindow({ homeUrl = SEARCH_HOME, browser = 'ie' })
       <div className="flex-1 min-h-0 bg-white border border-[#8a9aad] overflow-hidden">
         {loadedUrl === SEARCH_HOME ? (
           <SearchHomePage browser={browser} onSearch={(q) => navigate(searchUrl(q))} />
-        ) : loadedUrl.startsWith('app:search?') ? (
-          <SearchResultsPage url={loadedUrl} onOpen={(u) => navigate(u)} />
         ) : blocked ? (
           <BlockedPage url={loadedUrl} browser={browser} onRetry={refresh} />
         ) : (

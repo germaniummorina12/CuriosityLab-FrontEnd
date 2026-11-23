@@ -19,6 +19,5 @@ export const addressesApi = {
   create: (userId, payload) => apiClient.post(`/addresses/${userId}`, { id: userId, ...payload }).then((r) => r.data),
   update: (id, payload) => apiClient.put(`/addresses/${id}`, { id, ...payload }).then((r) => r.data),
   remove: (id) => apiClient.delete(`/addresses/${id}`).then((r) => r.data),
-  // Planned, not yet implemented on the backend (see CL tickets):
-  restore: (id) => apiClient.put(`/addresses/${id}/restore`).then((r) => r.data),
+  restore: (id) => apiClient.put(`/addresses/restore-address/${id}`, { id }).then((r) => r.data),
 }

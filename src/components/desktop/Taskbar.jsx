@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { Monitor, Volume2, VolumeX, Wifi, ChevronLeft, Plus, Minus, SignalHigh } from 'lucide-react'
+import { ChevronLeft, Plus, Minus, SignalHigh } from 'lucide-react'
 import { useWindowManager } from '../../context/WindowManagerContext'
 import { buttonXp, sectionGroove } from '../../styles/xpTheme'
+import { ShowDesktopIcon, WirelessIcon, VolumeIcon, SecurityCenterIcon } from '../icons/RetroIcons'
 
 function VolumePopup({ volume, setVolume, muted, setMuted }) {
   return (
@@ -57,6 +58,21 @@ function NetworkPopup() {
   )
 }
 
+function SecurityPopup() {
+  return (
+    <div className="absolute bottom-[38px] right-[25px] w-[210px] rounded-[4px] border border-[#716f64] bg-[#ece9d8] shadow-[2px_2px_8px_rgba(0,0,0,0.5)] p-3 flex flex-col gap-2 z-50">
+      <div className="flex items-center gap-2">
+        <SecurityCenterIcon size={24} />
+        <div>
+          <div className="text-[12px] font-bold text-[#111]">Windows Security Center</div>
+          <div className="text-[11px] text-[#1a7a2e]">Your computer is protected</div>
+        </div>
+      </div>
+      <p className="text-[10px] text-[#777]">This is a decorative status popup — there's no real firewall/antivirus behind it.</p>
+    </div>
+  )
+}
+
 export default function Taskbar({ startOpen, onToggleStart }) {
   const { windows, focusWindow, minimizeWindow, showDesktop } = useWindowManager()
   const [now, setNow] = useState(new Date())
@@ -93,19 +109,22 @@ export default function Taskbar({ startOpen, onToggleStart }) {
   }
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-[40px] bg-gradient-to-b from-[#2a6fe0] via-[#1e5adf] to-[#0f3aa0] border-t border-[#0a2a80] flex items-center px-1 gap-1 z-40">
+    <div className="absolute bottom-0 left-0 right-0 h-[40px] bg-[linear-gradient(180deg,#3888e9_0%,#4993e6_5%,#2257d5_18%,#2663e0_90%,#1941a5_100%)] border-t border-[#3168d5] shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] flex items-center px-1 gap-1 z-40">
       <button
         data-start-button
         onClick={onToggleStart}
-        className={`h-[32px] flex items-center gap-1.5 px-3 rounded-[4px] border border-[#1a5c1f] bg-gradient-to-b from-[#6fd16f] via-[#2fa23a] to-[#1f7a2e] text-white font-bold italic text-[14px] shadow-[1px_1px_2px_rgba(0,0,0,0.4)] ${
+        className={`relative h-[34px] w-[114px] shrink-0 flex items-center gap-1.5 pl-1.5 pr-3 rounded-[11px] border border-[#1a5c1f] bg-[linear-gradient(180deg,#8df08d_0%,#5fc45f_10%,#2fa23a_50%,#1f7a2e_90%,#15601f_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] ${
           startOpen ? 'brightness-90' : 'hover:brightness-110'
         }`}
       >
+        {/* Pixel-measured from RetroBar's actual XP Blue button asset (startxpbluebutton.png):
+            the corner radius is a plain ~33% of the button height, mirrored top/bottom — a
+            moderately-rounded rectangle, not a full pill and not an asymmetric "flag tail". */}
         <img src="/16-162608_windows-logo-png-windows-xp-logo.png" alt="" className="w-7 h-7 object-contain -ml-1" />
-        start
+        <span className="font-bold italic text-[15px] text-white [text-shadow:1px_1px_4px_#454c10]">start</span>
       </button>
 
-      <div className="w-px h-[26px] bg-[#0a2a80] mx-0.5" />
+      <div className="w-px h-[26px] bg-[#1941a5] mx-0.5" />
 
       {/* Quick Launch */}
       <div className="flex items-center gap-0.5 pr-1">
@@ -114,11 +133,11 @@ export default function Taskbar({ startOpen, onToggleStart }) {
           title="Show Desktop"
           className="w-[26px] h-[26px] flex items-center justify-center rounded-[2px] text-white hover:bg-white/15 active:bg-black/20"
         >
-          <Monitor size={15} strokeWidth={2} />
+          <ShowDesktopIcon size={16} />
         </button>
       </div>
 
-      <div className="w-px h-[26px] bg-[#0a2a80] mx-0.5" />
+      <div className="w-px h-[26px] bg-[#1941a5] mx-0.5" />
 
       <div className="flex-1 flex items-center gap-1 overflow-x-auto">
         {windows.map((w) => (
@@ -127,8 +146,8 @@ export default function Taskbar({ startOpen, onToggleStart }) {
             onClick={() => handleClick(w)}
             className={`h-[30px] max-w-[160px] flex items-center gap-1.5 px-2 rounded-[3px] border text-[12px] text-white truncate ${
               w.id === topId && !w.minimized
-                ? 'bg-[#0f3aa0] border-[#0a2a80] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.5)]'
-                : 'bg-gradient-to-b from-[#3f7fe8] to-[#1e5adf] border-[#0a2a80] hover:brightness-110'
+                ? 'bg-[linear-gradient(180deg,#123d94_0%,#1951b9_5%,#1a50b8_80%,#2156b7_100%)] border-[#1c62d2] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.4)]'
+                : 'bg-[linear-gradient(180deg,#4892f7_0%,#3980f4_17%)] border-[#3067dd] hover:brightness-110'
             }`}
           >
             {w.icon ? <w.icon size={18} strokeWidth={2} /> : null}
@@ -137,10 +156,12 @@ export default function Taskbar({ startOpen, onToggleStart }) {
         ))}
       </div>
 
-      <div className="w-px h-[26px] bg-[#0a2a80] mx-0.5" />
+      <div className="w-px h-[26px] bg-[#1941a5] mx-0.5" />
 
-      {/* System tray */}
-      <div className="relative flex items-center gap-1.5 px-2 h-[32px] bg-gradient-to-b from-[#1e5adf] to-[#0f3aa0]">
+      {/* System tray — real XP shows a handful of icons inline by default (network,
+          volume, Security Center) with the chevron only for whatever overflows past
+          those; it isn't a "click to reveal everything" control. */}
+      <div className="relative flex items-center gap-1.5 px-2 h-[32px] bg-[linear-gradient(180deg,#16adf0_0%,#19b9f3_5%,#1290e8_18%,#0d8dea_60%,#0fa0ef_90%,#1582dc_100%)]">
         <button
           onClick={() => setTrayOpen((v) => !v)}
           title="Show hidden icons"
@@ -148,37 +169,45 @@ export default function Taskbar({ startOpen, onToggleStart }) {
         >
           <ChevronLeft size={12} strokeWidth={2.5} className={trayOpen ? 'rotate-180' : ''} />
         </button>
-        {trayOpen ? (
-          <button
-            data-tray-button
-            onClick={() => setOpenPopup((p) => (p === 'network' ? null : 'network'))}
-            title="Wireless Network Connection"
-            className="text-white/90 hover:text-white"
-          >
-            <Wifi size={14} strokeWidth={2} />
-          </button>
-        ) : null}
+        <button
+          data-tray-button
+          onClick={() => setOpenPopup((p) => (p === 'security' ? null : 'security'))}
+          title="Windows Security Center"
+          className="text-white/90 hover:text-white"
+        >
+          <SecurityCenterIcon size={15} />
+        </button>
+        <button
+          data-tray-button
+          onClick={() => setOpenPopup((p) => (p === 'network' ? null : 'network'))}
+          title="Wireless Network Connection"
+          className="text-white/90 hover:text-white"
+        >
+          <WirelessIcon size={16} />
+        </button>
         <button
           data-tray-button
           onClick={() => setOpenPopup((p) => (p === 'volume' ? null : 'volume'))}
           title="Volume"
-          className="text-white/90 hover:text-white"
+          className={muted || volume === 0 ? 'opacity-40' : ''}
         >
-          {muted || volume === 0 ? <VolumeX size={14} strokeWidth={2} /> : <Volume2 size={14} strokeWidth={2} />}
+          <VolumeIcon size={16} />
         </button>
 
         {openPopup ? (
           <div ref={popupRef}>
             {openPopup === 'volume' ? (
               <VolumePopup volume={volume} setVolume={setVolume} muted={muted} setMuted={setMuted} />
-            ) : (
+            ) : openPopup === 'network' ? (
               <NetworkPopup />
+            ) : (
+              <SecurityPopup />
             )}
           </div>
         ) : null}
       </div>
 
-      <div className="h-[32px] px-3 flex items-center bg-gradient-to-b from-[#3f7fe8] to-[#1e5adf] border border-[#0a2a80] rounded-[3px] text-white text-[12px] tabular-nums">
+      <div className="h-[32px] px-3 flex items-center bg-[linear-gradient(180deg,#16adf0_0%,#19b9f3_5%,#1290e8_18%,#0d8dea_60%,#0fa0ef_90%,#1582dc_100%)] border border-[#095bc9] rounded-[3px] text-white text-[12px] tabular-nums">
         {now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </div>
     </div>

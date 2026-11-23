@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { Minus, Square, X } from 'lucide-react'
 import { useWindowManager } from '../../context/WindowManagerContext'
 import {
-  windowFrame,
+  windowFrameBase,
+  windowBorderActive,
+  windowBorderInactive,
   titleBarActive,
   titleBarInactive,
   titleBarButton,
@@ -49,10 +51,12 @@ export default function Window({ win, isTop, children }) {
     : { left: win.x, top: win.y, width: win.width, height: win.height, zIndex: win.zIndex }
 
   const Icon = win.icon
+  const rounding = win.maximized ? 'rounded-none' : 'rounded-t-[8px]'
+  const border = isTop ? windowBorderActive : windowBorderInactive
 
   return (
     <div
-      className={`absolute ${win.minimized ? 'hidden' : 'flex'} ${win.maximized ? 'rounded-none' : windowFrame} flex-col origin-bottom transition-all duration-200 ease-out ${
+      className={`absolute ${win.minimized ? 'hidden' : 'flex'} ${rounding} ${border} ${windowFrameBase} flex-col origin-bottom transition-all duration-200 ease-out ${
         entered ? 'opacity-100 scale-100' : 'opacity-60 scale-[0.15]'
       }`}
       style={style}
@@ -70,7 +74,7 @@ export default function Window({ win, isTop, children }) {
           toggleMaximize(win.id)
         }}
       >
-        <div className="flex items-center gap-1.5 text-[13px] font-bold tracking-tight truncate">
+        <div className="flex items-center gap-1.5 text-[12px] font-bold tracking-tight truncate">
           {Icon ? <Icon size={18} strokeWidth={2} /> : null}
           <span className="truncate">{win.title}</span>
         </div>

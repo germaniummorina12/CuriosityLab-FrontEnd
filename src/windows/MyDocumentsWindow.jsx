@@ -2,6 +2,8 @@ import { useWindowManager } from '../context/WindowManagerContext'
 import { useAuth } from '../context/AuthContext'
 import { registry } from './registry'
 import { sectionGroove, statusBar } from '../styles/xpTheme'
+import { ExplorerChrome } from '../components/desktop/ExplorerChrome'
+import { MyDocumentsIcon } from '../components/icons/RetroIcons'
 
 const DOCS = [
   { kind: 'users', label: 'UserList.xls' },
@@ -21,6 +23,7 @@ export default function MyDocumentsWindow() {
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-2">
+      <ExplorerChrome title="My Documents" icon={MyDocumentsIcon} />
       <div className={`${sectionGroove} flex-1 min-h-0 overflow-auto`}>
         {DOCS.filter((d) => !d.adminOnly || isAdmin).map((d) => {
           const Icon = registry[d.kind].icon

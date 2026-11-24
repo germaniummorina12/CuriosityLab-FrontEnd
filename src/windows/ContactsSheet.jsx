@@ -1,42 +1,52 @@
 import { useEffect, useState } from 'react'
 import { contactsApi } from '../lib/endpoints/contacts'
+import { usersApi } from '../lib/endpoints/users'
 import SpreadsheetToolbar from '../components/spreadsheet/SpreadsheetToolbar'
 import SpreadsheetTable from '../components/spreadsheet/SpreadsheetTable'
 import { statusBar } from '../styles/xpTheme'
 
 const columns = [
   { key: 'id', label: 'Id' },
-  { key: 'type', label: 'Type' },
+  { key: 'userName', label: 'User' },
+  { key: 'contactType', label: 'Type' },
   { key: 'value', label: 'Value' },
 ]
+
+// Backend has no "all contacts" endpoint, only by-user/{userId} — fetch each user's
+// contacts and flatten, same approach AddressesSheet uses for get-user-with-Addresses.
+async function loadAllContacts() {
+  const users = await usersApi.getAll()
+  const perUser = await Promise.all(
+    (Array.isArray(users) ? users : []).map((user) =>
+      contactsApi.getByUser(user.id).catch(() => []),
+    ),
+  )
+  return perUser.flat()
+}
 
 export default function ContactsSheet() {
   const [rows, setRows] = useState([])
   const [status, setStatus] = useState('loading')
 
   useEffect(() => {
-    contactsApi
-      .search('')
+    loadAllContacts()
       .then((data) => {
         setRows(Array.isArray(data) ? data : [])
         setStatus('ready')
       })
-      .catch(() => setStatus('not-built'))
+      .catch(() => setStatus('error'))
   }, [])
 
   return (
     <>
       <SpreadsheetToolbar title="ContactList.xls — Sheet1" />
-      {status === 'not-built' ? (
-        <div className={`${statusBar} text-[#333]`}>
-          This sheet is ready on the frontend, but the Contacts API isn't built yet — it's on the backlog
-          (Contacts CRUD/bulk/filter tickets). This window will populate automatically once those endpoints exist.
-        </div>
+      {status === 'error' ? (
+        <div className={`${statusBar} text-[#8a1a1a]`}>Could not reach the backend.</div>
       ) : null}
       <SpreadsheetTable
         columns={columns}
         rows={rows}
-        emptyLabel={status === 'loading' ? 'Loading…' : 'No data yet'}
+        emptyLabel={status === 'loading' ? 'Loading…' : 'No contacts on file'}
       />
       <div className={statusBar}>{rows.length} record(s)</div>
     </>

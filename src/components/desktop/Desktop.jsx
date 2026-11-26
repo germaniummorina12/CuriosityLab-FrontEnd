@@ -18,7 +18,7 @@ export default function Desktop() {
   const launch = (kind) => {
     const entry = registry[kind]
     if (!entry) return
-    openWindow({ kind, title: entry.title, icon: entry.icon, width: entry.width, height: entry.height })
+    openWindow({ kind, title: entry.title, icon: entry.icon, width: entry.width, height: entry.height, maximized: entry.maximized })
     setStartOpen(false)
   }
 

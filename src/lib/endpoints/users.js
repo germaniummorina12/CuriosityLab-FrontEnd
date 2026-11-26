@@ -3,6 +3,8 @@ import { apiClient } from '../apiClient'
 export const usersApi = {
   getAll: () => apiClient.get('/users').then((r) => r.data),
   getById: (id) => apiClient.get(`/users/${id}`).then((r) => r.data),
+  // Like getById, but also includes the user's contacts (GetById only includes addresses)
+  getProfile: (id) => apiClient.get(`/users/user-profile/${id}`).then((r) => r.data),
   getByAge: (age) => apiClient.get(`/users/age/${age}`).then((r) => r.data),
   getByAgeRange: (minAge, maxAge) =>
     apiClient.get('/users/range-age', { params: { minAge, maxAge } }).then((r) => r.data),

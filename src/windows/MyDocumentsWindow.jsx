@@ -12,18 +12,18 @@ const DOCS = [
   { kind: 'contacts', label: 'ContactList.xls' },
 ]
 
-export default function MyDocumentsWindow() {
+export default function MyDocumentsWindow({ windowId }) {
   const { openWindow } = useWindowManager()
   const { isAdmin } = useAuth()
 
   const open = (kind) => {
     const entry = registry[kind]
-    openWindow({ kind, title: entry.title, icon: entry.icon, width: entry.width, height: entry.height })
+    openWindow({ kind, title: entry.title, icon: entry.icon, width: entry.width, height: entry.height, maximized: entry.maximized })
   }
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-2">
-      <ExplorerChrome title="My Documents" icon={MyDocumentsIcon} />
+      <ExplorerChrome title="My Documents" icon={MyDocumentsIcon} windowId={windowId} />
       <div className={`${sectionGroove} flex-1 min-h-0 overflow-auto`}>
         {DOCS.filter((d) => !d.adminOnly || isAdmin).map((d) => {
           const Icon = registry[d.kind].icon

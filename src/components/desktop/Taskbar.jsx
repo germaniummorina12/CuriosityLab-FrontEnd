@@ -113,14 +113,14 @@ export default function Taskbar({ startOpen, onToggleStart }) {
       <button
         data-start-button
         onClick={onToggleStart}
-        className={`relative h-[34px] w-[114px] shrink-0 flex items-center gap-1.5 pl-1.5 pr-3 rounded-[11px] border border-[#1a5c1f] bg-[linear-gradient(180deg,#8df08d_0%,#5fc45f_10%,#2fa23a_50%,#1f7a2e_90%,#15601f_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] ${
+        className={`relative h-[34px] w-[114px] shrink-0 flex items-center gap-1.5 pl-3 pr-3 rounded-[11px] border border-[#1a5c1f] bg-[linear-gradient(180deg,#8df08d_0%,#5fc45f_10%,#2fa23a_50%,#1f7a2e_90%,#15601f_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] ${
           startOpen ? 'brightness-90' : 'hover:brightness-110'
         }`}
       >
         {/* Pixel-measured from RetroBar's actual XP Blue button asset (startxpbluebutton.png):
             the corner radius is a plain ~33% of the button height, mirrored top/bottom — a
             moderately-rounded rectangle, not a full pill and not an asymmetric "flag tail". */}
-        <img src="/16-162608_windows-logo-png-windows-xp-logo.png" alt="" className="w-7 h-7 object-contain -ml-1" />
+        <img src="/16-162608_windows-logo-png-windows-xp-logo.png" alt="" className="w-7 h-7 object-contain" />
         <span className="font-bold italic text-[15px] text-white [text-shadow:1px_1px_4px_#454c10]">start</span>
       </button>
 

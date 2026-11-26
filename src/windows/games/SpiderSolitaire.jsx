@@ -1,8 +1,13 @@
 import { useState } from 'react'
 import { buttonXp, statusBar } from '../../styles/xpTheme'
-import { Card } from './cardUtils'
+import { Card, CARD_W, CARD_H } from './cardUtils'
+import { XpMenuBar } from '../../components/desktop/XpMenuBar'
+import { useWindowManager } from '../../context/WindowManagerContext'
 
 const COLS = 10
+// How far down the next card sits — big enough that a covered card's corner
+// rank/suit pip stays fully visible instead of being hidden under the next card.
+const STACK_OFFSET = 26
 const SUIT_SETS = { 1: ['S'], 2: ['S', 'H'], 4: ['S', 'H', 'D', 'C'] }
 
 function buildDeck(suitCount) {
@@ -52,10 +57,13 @@ function extractCompletedRun(column) {
   return column.slice(0, -13)
 }
 
-export default function SpiderSolitaire() {
+export default function SpiderSolitaire({ windowId }) {
+  const { closeWindow } = useWindowManager()
   const [suitCount, setSuitCount] = useState(2)
   const [state, setState] = useState(() => deal(2))
   const [selected, setSelected] = useState(null)
+  const [dragOverCol, setDragOverCol] = useState(null)
+  const [aboutOpen, setAboutOpen] = useState(false)
 
   const newGame = (count = suitCount) => {
     setSuitCount(count)
@@ -100,6 +108,36 @@ export default function SpiderSolitaire() {
     attemptMove(col)
   }
 
+  const onCardDragStart = (col, index) => (e) => {
+    if (!state.tableau[col][index].faceUp) {
+      e.preventDefault()
+      return
+    }
+    setSelected({ col, index })
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  const onCardDragEnd = () => {
+    setSelected(null)
+    setDragOverCol(null)
+  }
+
+  const onColumnDragOver = (destCol) => (e) => {
+    e.preventDefault()
+    if (dragOverCol !== destCol) setDragOverCol(destCol)
+  }
+
+  const onColumnDragLeave = (destCol) => () => {
+    setDragOverCol((c) => (c === destCol ? null : c))
+  }
+
+  const onColumnDrop = (destCol) => (e) => {
+    e.preventDefault()
+    setDragOverCol(null)
+    if (!selected) return
+    attemptMove(destCol)
+  }
+
   const attemptMove = (destCol) => {
     setState((s) => {
       const group = getGroup(s, selected)
@@ -133,8 +171,25 @@ export default function SpiderSolitaire() {
 
   const won = state.completed === 8
 
+  const menus = {
+    Game: [
+      { label: 'Deal', onClick: () => newGame() },
+      { divider: true },
+      ...[1, 2, 4].map((n) => ({
+        label: `${n} suit${n > 1 ? 's' : ''}`,
+        active: suitCount === n,
+        onClick: () => newGame(n),
+      })),
+      { divider: true },
+      { label: 'Exit', onClick: () => windowId && closeWindow(windowId) },
+    ],
+    Help: [{ label: 'About Spider Solitaire', onClick: () => setAboutOpen(true) }],
+  }
+
   return (
-    <div className="flex-1 min-h-0 flex flex-col gap-2 -m-2 p-2 bg-[#1f7a2e]">
+    <div className="relative flex-1 min-h-0 flex flex-col -m-2">
+      <XpMenuBar menus={menus} />
+      <div className="flex-1 min-h-0 flex flex-col gap-2 p-2 bg-[#1f7a2e]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1">
           {[1, 2, 4].map((n) => (
@@ -150,37 +205,72 @@ export default function SpiderSolitaire() {
         <span className="text-white text-[12px] font-bold">Completed: {state.completed}/8</span>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 shrink-0">
         <div
           onClick={dealFromStock}
-          className="w-[42px] h-[58px] rounded-[3px] border border-white/30 cursor-pointer flex items-center justify-center"
+          className="rounded-[4px] border border-white/30 cursor-pointer flex items-center justify-center"
+          style={{ width: CARD_W, height: CARD_H }}
         >
           {state.stock.length > 0 ? (
-            <div className="w-full h-full rounded-[2px] bg-[repeating-linear-gradient(45deg,#1941a5,#1941a5_4px,#2a5ad1_4px,#2a5ad1_8px)]" />
+            <div className="w-full h-full rounded-[3px] bg-[repeating-linear-gradient(45deg,#1941a5,#1941a5_4px,#2a5ad1_4px,#2a5ad1_8px)]" />
           ) : null}
         </div>
         <span className="text-white text-[11px]">{Math.floor(state.stock.length / 10)} deals left</span>
         {won ? <span className="text-white font-bold text-[13px] ml-auto">You win!</span> : null}
       </div>
 
-      <div className="flex-1 flex items-start gap-1">
-        {state.tableau.map((col, colIndex) => (
-          <div key={colIndex} className="relative w-[42px]" style={{ height: 58 + Math.max(col.length - 1, 0) * 15 + 20 }}>
-            <div className="absolute inset-0" onClick={() => onEmptyClick(colIndex)} />
-            {col.map((card, index) => (
-              <Card
-                key={card.id}
-                card={card}
-                top={index * 15}
-                selected={selected?.col === colIndex && index >= selected.index}
-                onClick={() => onCardClick(colIndex, index)}
-              />
-            ))}
-          </div>
-        ))}
+      <div className="flex-1 min-h-0 overflow-auto">
+        <div className="flex items-start gap-1">
+          {state.tableau.map((col, colIndex) => (
+            <div
+              key={colIndex}
+              className={`relative rounded-[3px] transition-colors ${
+                dragOverCol === colIndex ? 'bg-white/15 outline outline-2 outline-dashed outline-white/60' : ''
+              }`}
+              style={{ width: CARD_W, height: CARD_H + Math.max(col.length - 1, 0) * STACK_OFFSET + 20 }}
+              onDragOver={onColumnDragOver(colIndex)}
+              onDragLeave={onColumnDragLeave(colIndex)}
+              onDrop={onColumnDrop(colIndex)}
+            >
+              <div className="absolute inset-0" onClick={() => onEmptyClick(colIndex)} />
+              {col.map((card, index) => (
+                <Card
+                  key={card.id}
+                  card={card}
+                  top={index * STACK_OFFSET}
+                  draggable
+                  dragging={selected?.col === colIndex && index >= selected.index}
+                  selected={selected?.col === colIndex && index >= selected.index}
+                  onClick={() => onCardClick(colIndex, index)}
+                  onDragStart={onCardDragStart(colIndex, index)}
+                  onDragEnd={onCardDragEnd}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className={statusBar}>Build down regardless of suit; only same-suit runs move together. Complete K→A in one suit to clear it.</div>
+      </div>
+
+      {aboutOpen ? (
+        <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-50" onClick={() => setAboutOpen(false)}>
+          <div
+            className="bg-[#ece9d8] border border-[#716f64] shadow-[2px_2px_8px_rgba(0,0,0,0.5)] p-4 text-[12px] text-[#111] w-[220px]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="font-bold mb-1">Spider Solitaire</p>
+            <p className="mb-3">Arrange cards in sequence from King to Ace to clear each suit.</p>
+            <button
+              onClick={() => setAboutOpen(false)}
+              className="px-3 py-0.5 bg-[#ece9d8] border-t-white border-l-white border-b-[#716f64] border-r-[#716f64] border"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

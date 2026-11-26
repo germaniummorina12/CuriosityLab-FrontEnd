@@ -11,9 +11,68 @@ import {
   titleBarCloseButton,
 } from '../../styles/xpTheme'
 
+const MIN_WIDTH = 240
+const MIN_HEIGHT = 160
+
+// Edge/corner drag zones for resizing — rendered around the window frame when it isn't
+// maximized. Each one grabs the pointer (same pattern as the title bar drag below) and
+// recomputes width/height/position from how far the pointer has moved since pointerdown.
+const RESIZE_HANDLES = [
+  { dir: 'n', className: 'top-0 left-2 right-2 h-1.5 cursor-ns-resize' },
+  { dir: 's', className: 'bottom-0 left-2 right-2 h-1.5 cursor-ns-resize' },
+  { dir: 'w', className: 'top-2 bottom-2 left-0 w-1.5 cursor-ew-resize' },
+  { dir: 'e', className: 'top-2 bottom-2 right-0 w-1.5 cursor-ew-resize' },
+  { dir: 'nw', className: 'top-0 left-0 w-2.5 h-2.5 cursor-nwse-resize' },
+  { dir: 'se', className: 'bottom-0 right-0 w-2.5 h-2.5 cursor-nwse-resize' },
+  { dir: 'ne', className: 'top-0 right-0 w-2.5 h-2.5 cursor-nesw-resize' },
+  { dir: 'sw', className: 'bottom-0 left-0 w-2.5 h-2.5 cursor-nesw-resize' },
+]
+
 export default function Window({ win, isTop, children }) {
-  const { closeWindow, focusWindow, minimizeWindow, toggleMaximize, moveWindow } = useWindowManager()
+  const { closeWindow, focusWindow, minimizeWindow, toggleMaximize, moveWindow, resizeWindow } = useWindowManager()
   const dragState = useRef(null)
+  const resizeState = useRef(null)
+
+  const onResizePointerDown = (dir) => (e) => {
+    e.stopPropagation()
+    focusWindow(win.id)
+    resizeState.current = {
+      dir,
+      startX: e.clientX,
+      startY: e.clientY,
+      originX: win.x,
+      originY: win.y,
+      originW: win.width,
+      originH: win.height,
+    }
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+
+  const onResizePointerMove = (e) => {
+    const r = resizeState.current
+    if (!r) return
+    const dx = e.clientX - r.startX
+    const dy = e.clientY - r.startY
+    let { originX: x, originY: y, originW: w, originH: h } = r
+
+    if (r.dir.includes('e')) w = Math.max(MIN_WIDTH, r.originW + dx)
+    if (r.dir.includes('s')) h = Math.max(MIN_HEIGHT, r.originH + dy)
+    if (r.dir.includes('w')) {
+      w = Math.max(MIN_WIDTH, r.originW - dx)
+      x = r.originX + (r.originW - w)
+    }
+    if (r.dir.includes('n')) {
+      h = Math.max(MIN_HEIGHT, r.originH - dy)
+      y = r.originY + (r.originH - h)
+    }
+
+    resizeWindow(win.id, w, h)
+    if (x !== r.originX || y !== r.originY) moveWindow(win.id, x, y)
+  }
+
+  const onResizePointerUp = () => {
+    resizeState.current = null
+  }
 
   // Pop-in open animation — runs once per window instance (not on every minimize/restore,
   // since this component stays mounted the whole time the window exists).
@@ -62,6 +121,17 @@ export default function Window({ win, isTop, children }) {
       style={style}
       onMouseDown={() => focusWindow(win.id)}
     >
+      {!win.maximized
+        ? RESIZE_HANDLES.map(({ dir, className }) => (
+            <div
+              key={dir}
+              className={`absolute z-20 ${className}`}
+              onPointerDown={onResizePointerDown(dir)}
+              onPointerMove={onResizePointerMove}
+              onPointerUp={onResizePointerUp}
+            />
+          ))
+        : null}
       <div
         className={`h-[30px] flex items-center justify-between pl-2 pr-1 select-none cursor-default ${
           isTop ? titleBarActive : titleBarInactive
@@ -90,7 +160,7 @@ export default function Window({ win, isTop, children }) {
           </button>
         </div>
       </div>
-      <div className="flex-1 min-h-0 bg-[#ece9d8] p-2 flex flex-col">{children}</div>
+      <div data-window-body={win.id} className="flex-1 min-h-0 bg-[#ece9d8] p-2 flex flex-col">{children}</div>
     </div>
   )
 }

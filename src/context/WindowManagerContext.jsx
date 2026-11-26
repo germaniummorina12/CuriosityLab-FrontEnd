@@ -8,7 +8,7 @@ export function WindowManagerProvider({ children }) {
   const [windows, setWindows] = useState([])
   const zRef = useRef(10)
 
-  const openWindow = ({ kind, title, icon, params, width = 640, height = 440 }) => {
+  const openWindow = ({ kind, title, icon, params, width = 640, height = 440, maximized = false }) => {
     const id = `${kind}:${params?.id ?? ''}`
 
     setWindows((prev) => {
@@ -35,7 +35,7 @@ export function WindowManagerProvider({ children }) {
           height,
           zIndex: zRef.current,
           minimized: false,
-          maximized: false,
+          maximized,
         },
       ]
     })

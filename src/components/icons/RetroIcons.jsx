@@ -65,8 +65,39 @@ export function VolumeIcon({ size = 24 }) {
   return <RealIcon src="/xp-icon-volume.png" size={size} />
 }
 
+// Real XP's "Wireless Network Connection" tray icon is a small grey monitor
+// glyph with blue/white signal-strength arcs fanning off its top-left corner —
+// not a generic black Wi-Fi glyph (which is what the old sourced PNG actually
+// was). Redrawn by hand to match real screenshots of the genuine icon.
 export function WirelessIcon({ size = 24 }) {
-  return <RealIcon src="/xp-icon-wireless.png" size={size} />
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24">
+      <path
+        d="M9 3.2 A 10 10 0 0 1 20.8 15"
+        fill="none"
+        stroke="#bcd9f7"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+      <path
+        d="M9.4 6.9 A 6.6 6.6 0 0 1 17.1 14.6"
+        fill="none"
+        stroke="#6fa8e8"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M9.8 10.6 A 3.2 3.2 0 0 1 13.4 14.2"
+        fill="none"
+        stroke="#2f6fd6"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <rect x="4" y="11" width="15" height="10" rx="1" fill="#e7ecf2" stroke="#7a828c" strokeWidth="0.8" />
+      <rect x="5.2" y="12.1" width="12.6" height="7.3" rx="0.4" fill="#2f6fb5" />
+      <rect x="9" y="21" width="6" height="1.4" rx="0.3" fill="#9aa2ab" />
+    </svg>
+  )
 }
 
 export function SecurityCenterIcon({ size = 24 }) {

@@ -5,20 +5,32 @@ import { buttonXp, buttonPrimary, sectionGroove, statusBar } from '../styles/xpT
 import { ExplorerChrome } from '../components/desktop/ExplorerChrome'
 import { ControlPanelIcon } from '../components/icons/RetroIcons'
 
-export default function ControlPanelWindow() {
+export default function ControlPanelWindow({ windowId }) {
   const { openWindow } = useWindowManager()
   const { session, accounts, login, isAdmin } = useAuth()
 
   const launch = (kind) => {
     const entry = registry[kind]
-    openWindow({ kind, title: entry.title, icon: entry.icon, width: entry.width, height: entry.height })
+    openWindow({ kind, title: entry.title, icon: entry.icon, width: entry.width, height: entry.height, maximized: entry.maximized })
   }
 
-  const programs = Object.entries(registry).filter(([kind]) => kind !== 'recycle-bin' && kind !== 'user-profile')
+  const programs = Object.entries(registry).filter(
+    ([kind]) =>
+      ![
+        'recycle-bin',
+        'user-profile',
+        'edit-user',
+        'role-profile',
+        'edit-role',
+        'edit-address',
+        'edit-contact',
+        'contacts-for-user',
+      ].includes(kind),
+  )
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3 overflow-auto">
-      <ExplorerChrome title="Control Panel" icon={ControlPanelIcon} />
+      <ExplorerChrome title="Control Panel" icon={ControlPanelIcon} windowId={windowId} />
       <div>
         <p className="text-[12px] font-bold text-[#1941a5] mb-1.5">User Accounts</p>
         <div className={`${sectionGroove} p-2 flex items-center gap-3`}>

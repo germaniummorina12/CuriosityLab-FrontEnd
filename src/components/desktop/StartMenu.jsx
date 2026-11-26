@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { LayoutDashboard, Users, Shield, MapPin, Contact, LogOut, Power } from 'lucide-react'
+import { LogOut, Power } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { registry } from '../../windows/registry'
 
@@ -19,12 +19,16 @@ export default function StartMenu({ onLaunch, onClose, onLogout }) {
     return () => document.removeEventListener('mousedown', handleOutsideClick)
   }, [onClose])
 
+  // Icons come straight from the registry so each window shows the same icon here as it
+  // does in its own title bar / the taskbar / the desktop — it previously used unrelated
+  // generic lucide icons that didn't match (e.g. a plain "person" icon for Users, which
+  // opens the same Excel-icon window as UserList.xls on the desktop).
   const items = [
-    { kind: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { kind: 'users', label: 'Users', icon: Users },
-    ...(isAdmin ? [{ kind: 'roles', label: 'Roles', icon: Shield }] : []),
-    { kind: 'addresses', label: 'Addresses', icon: MapPin },
-    { kind: 'contacts', label: 'Contacts', icon: Contact },
+    { kind: 'dashboard', label: 'Dashboard', icon: registry.dashboard.icon },
+    { kind: 'users', label: 'Users', icon: registry.users.icon },
+    ...(isAdmin ? [{ kind: 'roles', label: 'Roles', icon: registry.roles.icon }] : []),
+    { kind: 'addresses', label: 'Addresses', icon: registry.addresses.icon },
+    { kind: 'contacts', label: 'Contacts', icon: registry.contacts.icon },
   ]
 
   const extras = [

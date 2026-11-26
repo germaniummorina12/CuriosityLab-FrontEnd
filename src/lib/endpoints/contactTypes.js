@@ -1,6 +1,6 @@
 import { apiClient } from '../apiClient'
 
-// Planned endpoint — not implemented on the backend yet. Read-only dropdown source, no CRUD.
+// Read-only dropdown source, no CRUD on the backend.
 export const contactTypesApi = {
-  getAll: () => apiClient.get('/contact-types').then((r) => r.data),
+  getAll: () => apiClient.get('/contactTypes').then((r) => r.data),
 }

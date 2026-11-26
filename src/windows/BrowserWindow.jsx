@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, RotateCw, Home, AlertTriangle, Plus, X, Globe, Search } from 'lucide-react'
 import { buttonXp, fieldInset, statusBar } from '../styles/xpTheme'
 
@@ -150,10 +150,23 @@ function SearchHomePage({ browser, onSearch }) {
 
 const makeTab = (id, url) => ({ id, history: [url], index: 0, address: '', reloadKey: 0 })
 
+// A real `<iframe src="https://...">` can never have `target="_blank"` links redirected into
+// itself (that's a cross-origin rule, not something sandbox flags change), so pages are loaded
+// through our own dev-only proxy instead (`vite-plugins/xpBrowserProxy.js`, never a third-party
+// CORS-proxy service), which fetches and rewrites the HTML server-side: blank-target links are
+// stripped and every click/`window.open` is relayed back here via `postMessage`, driving this
+// component's own tab/history state instead of letting the browser spawn a real new tab. The
+// proxy runs on its own origin (a separate port), so `allow-same-origin` below is safe — the
+// embedded page can use its own localStorage/cookies normally (real sites' scripts often crash
+// without that), while this app's own window/DOM stays genuinely cross-origin and unreachable.
+const PROXY_ORIGIN = 'http://localhost:57671'
+const proxiedSrc = (url) => `${PROXY_ORIGIN}/?url=${encodeURIComponent(url)}`
+
 export default function BrowserWindow({ homeUrl = SEARCH_HOME, browser = 'ie' }) {
   const idRef = useRef(1)
   const [tabs, setTabs] = useState(() => [makeTab(idRef.current, homeUrl)])
   const [activeId, setActiveId] = useState(1)
+  const iframeRef = useRef(null)
 
   const activeTab = tabs.find((t) => t.id === activeId) ?? tabs[0]
   const loadedUrl = activeTab.history[activeTab.index]
@@ -215,6 +228,16 @@ export default function BrowserWindow({ homeUrl = SEARCH_HOME, browser = 'ie' })
       return next
     })
   }
+
+  useEffect(() => {
+    const onMessage = (e) => {
+      if (e.data?.type !== 'xp-browser-navigate') return
+      if (iframeRef.current && e.source !== iframeRef.current.contentWindow) return
+      navigate(e.data.url)
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [activeId])
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-2">
@@ -289,11 +312,12 @@ export default function BrowserWindow({ homeUrl = SEARCH_HOME, browser = 'ie' })
           <BlockedPage url={loadedUrl} browser={browser} onRetry={refresh} />
         ) : (
           <iframe
+            ref={iframeRef}
             key={`${activeTab.id}-${loadedUrl}-${activeTab.reloadKey}`}
-            src={loadedUrl}
+            src={proxiedSrc(loadedUrl)}
             title="browser-frame"
             className="w-full h-full border-0"
-            referrerPolicy="no-referrer"
+            sandbox="allow-scripts allow-forms allow-same-origin"
           />
         )}
       </div>

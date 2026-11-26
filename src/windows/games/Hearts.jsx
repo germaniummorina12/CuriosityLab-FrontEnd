@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
-import { buttonXp, statusBar } from '../../styles/xpTheme'
+import { statusBar } from '../../styles/xpTheme'
 import { RED_SUITS, SUIT_SYMBOL, freshDeck } from './cardUtils'
+import { XpMenuBar } from '../../components/desktop/XpMenuBar'
+import { useWindowManager } from '../../context/WindowManagerContext'
 
 const NAMES = ['You', 'West', 'North', 'East']
 const value = (card) => (card.rank === 1 ? 14 : card.rank) // Ace-high for trick comparisons
@@ -55,16 +57,31 @@ function botChoice(hand, trick, heartsBroken) {
   return pool.reduce((hi, c) => (value(c) > value(hi) ? c : hi), pool[0])
 }
 
-export default function Hearts() {
+export default function Hearts({ windowId }) {
+  const { closeWindow } = useWindowManager()
   const [hands, setHands] = useState(() => dealHands())
   const [trick, setTrick] = useState([]) // [{player, card}]
   const [turn, setTurn] = useState(() => startingLeader(hands))
   const [heartsBroken, setHeartsBroken] = useState(false)
   const [scores, setScores] = useState([0, 0, 0, 0])
-  const [roundPoints, setRoundPoints] = useState([0, 0, 0, 0])
+  const [, setRoundPoints] = useState([0, 0, 0, 0])
   const [message, setMessage] = useState('')
   const [gameOver, setGameOver] = useState(false)
   const [firstTrick, setFirstTrick] = useState(true)
+  const [aboutOpen, setAboutOpen] = useState(false)
+
+  const newGame = () => {
+    const next = dealHands()
+    setHands(next)
+    setTrick([])
+    setTurn(startingLeader(next))
+    setHeartsBroken(false)
+    setScores([0, 0, 0, 0])
+    setRoundPoints([0, 0, 0, 0])
+    setMessage('')
+    setGameOver(false)
+    setFirstTrick(true)
+  }
 
   const playCard = (player, card) => {
     setHands((h) => {
@@ -165,8 +182,19 @@ export default function Hearts() {
 
   const seatCard = (seat) => trick.find((t) => t.player === seat)?.card
 
+  const menus = {
+    Game: [
+      { label: 'New Game', onClick: newGame },
+      { divider: true },
+      { label: 'Exit', onClick: () => windowId && closeWindow(windowId) },
+    ],
+    Help: [{ label: 'About Hearts', onClick: () => setAboutOpen(true) }],
+  }
+
   return (
-    <div className="flex-1 min-h-0 flex flex-col gap-2 -m-2 p-2 bg-[#1f7a2e]">
+    <div className="relative flex-1 min-h-0 flex flex-col -m-2">
+      <XpMenuBar menus={menus} />
+      <div className="flex-1 min-h-0 flex flex-col gap-2 p-2 bg-[#1f7a2e]">
       <div className="flex items-center justify-between text-white text-[11px] font-bold">
         <span>
           {NAMES.map((n, i) => `${n}: ${scores[i]}`).join('   ')}
@@ -206,6 +234,25 @@ export default function Hearts() {
       <div className={statusBar}>
         {turn === 0 && trick.length < 4 && !gameOver ? 'Your turn — click a card to play it.' : 'Waiting...'}
       </div>
+      </div>
+
+      {aboutOpen ? (
+        <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-50" onClick={() => setAboutOpen(false)}>
+          <div
+            className="bg-[#ece9d8] border border-[#716f64] shadow-[2px_2px_8px_rgba(0,0,0,0.5)] p-4 text-[12px] text-[#111] w-[220px]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="font-bold mb-1">Hearts</p>
+            <p className="mb-3">Avoid taking hearts and the queen of spades — lowest score wins.</p>
+            <button
+              onClick={() => setAboutOpen(false)}
+              className="px-3 py-0.5 bg-[#ece9d8] border-t-white border-l-white border-b-[#716f64] border-r-[#716f64] border"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }
